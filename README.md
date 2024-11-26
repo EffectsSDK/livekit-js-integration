@@ -5,6 +5,9 @@ Enhance your video calls, conferencing, or recordings with real-time popular vid
 This example builds upon the LiveKit test app, available here: [https://github.com/livekit/client-sdk-js/tree/main/examples/demo](https://github.com/livekit/client-sdk-js/tree/main/examples/demo)
 
 
+https://github.com/user-attachments/assets/6422a72c-e13f-45f1-a537-0332639ce0af
+
+
 
 ## Docs
 
