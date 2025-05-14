@@ -302,7 +302,7 @@ const appActions = {
 
   applyReplace: async () => {
     videoProcessor.clear();
-    videoProcessor.apply({ running: true, replace: 'https://effectssdk.ai/sdk/100.jpg' });
+    videoProcessor.apply({ running: true, background: { replace: 'https://effectssdk.ai/sdk/100.jpg' } } );
   },
 
   applyCCorrection: async () => {
@@ -337,7 +337,7 @@ const appActions = {
 
   applyLayout: async () => {
     videoProcessor.clear();
-    videoProcessor.apply({ running: true, layout: LayoutMode.LFTBOTTOM });
+    videoProcessor.apply({ running: true, layout: { type: LayoutMode.LFTBOTTOM } });
   },
 
   clearEffects: async () => {

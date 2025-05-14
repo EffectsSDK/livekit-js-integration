@@ -13,7 +13,7 @@
     "vite": "^5.4.10"
   },
   "dependencies": {
-    "effects-sdk": "^3.4.3",
+    "effects-sdk": "^3.5.3",
     "livekit-client": "^2.6.3"
   }
 }
