@@ -13,8 +13,8 @@ https://github.com/user-attachments/assets/6422a72c-e13f-45f1-a537-0332639ce0af
 
 - [Effects SDK for Web](https://github.com/EffectsSDK/web-integration-sample)
 - [API Reference](https://effectssdk.ai/sdk/web/docs/classes/tsvb.html)
-- [Feature Usage](docs/Features-Usage-Examples.md)
-- [Best Practices](docs/Best-Practices.md)
+- [Feature Usage](https://github.com/EffectsSDK/video-effects-sdk-web/blob/main/docs/Features-Usage-Examples.md)
+- [Best Practices](https://github.com/EffectsSDK/video-effects-sdk-web/blob/main/docs/Best-Practices.md)
 
 ## Installation
 
@@ -24,6 +24,13 @@ https://github.com/user-attachments/assets/6422a72c-e13f-45f1-a537-0332639ce0af
 npm install
 npm run dev
 ```
+
+## Trial Evaluation
+
+A Customer ID is required for the Effects SDK.
+
+To receive a new trial Customer ID, please fill out the contact form on the [effectssdk.ai](https://effectssdk.ai/request-trial) website.
+
 
 ## Usage
 
