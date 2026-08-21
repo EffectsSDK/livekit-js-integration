@@ -16,10 +16,7 @@ export class EffectsVideoProcessor implements TrackProcessor<Track.Kind, VideoPr
         this.effectsSdk = new tsvb('CUSTOMER_ID');
         this.effectsSdk.config({
             provider: "webgpu",
-            wasmPaths: { 
-                     'ort-wasm.wasm': 'https://effectssdk.ai/sdk/web/3.5.3/ort-wasm.wasm',
-                     'ort-wasm-simd.wasm': 'https://effectssdk.ai/sdk/web/3.5.3/ort-wasm-simd.wasm'
-                 }
+            test_inference: true
         });
         this.effectsSdk.preload();
     }
