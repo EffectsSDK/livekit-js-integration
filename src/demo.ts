@@ -232,17 +232,21 @@ const appActions = {
 
             await Promise.all(tracks.map(async (track) => {
               if (track instanceof LocalVideoTrack) {
-                await track.setProcessor(videoProcessor);
+                await track.setProcessor(videoProcessor, true);
               }
-              await room.localParticipant.publishTrack(track)
+              await room.localParticipant.publishTrack(track);
             }));
 
-          } catch(e: any) {
-            
-          }
+            appendLog(`tracks published in ${Date.now() - startTime}ms`);
+            updateButtonsForPublishState();
 
-          appendLog(`tracks published in ${Date.now() - startTime}ms`);
-          updateButtonsForPublishState();
+          } catch (error: unknown) {
+            console.error('Failed to initialize or publish local tracks', error);
+            appendLog(
+              'failed to initialize or publish local tracks:',
+              error instanceof Error ? error.message : String(error),
+            );
+          }
         }
       })
       .on(RoomEvent.ParticipantEncryptionStatusChanged, () => {
