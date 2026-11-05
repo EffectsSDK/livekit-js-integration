@@ -2,6 +2,12 @@
 
 This browser demo shows how to process a LiveKit local camera track with Effects SDK before publishing it. The processed stream is also used for the local preview.
 
+## Screencast
+
+<video src="./livekit-effectssdk-screencast.mp4" controls title="LiveKit and Effects SDK demo"></video>
+
+[Download or watch the demo screencast](./livekit-effectssdk-screencast.mp4)
+
 Current dependencies:
 
 - `effects-sdk` 3.13.1
