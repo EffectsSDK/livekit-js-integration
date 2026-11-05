@@ -330,6 +330,43 @@ const appActions = {
     videoProcessor.apply({ running: true, beautification: 0.8 });
   },
 
+  applyPortraitLighting: async () => {
+    await videoProcessor.clear();
+    await videoProcessor.apply({
+      running: true,
+      portraitLighting: {
+        enabled: true,
+        lightStrength: 0.7,
+        backgroundDarkness: 0.35,
+      },
+    });
+  },
+
+  applyLowerThird: async () => {
+    await videoProcessor.clear();
+    await videoProcessor.apply({
+      running: true,
+      lowerthird: {
+        show: true,
+        type: 'lowerthird_3',
+        options: {
+          color: {
+            primary: 0x0083f1,
+            secondary: 0xffffff,
+          },
+          offset: {
+            x: 0.02,
+            y: 0.1,
+          },
+          text: {
+            title: 'Effects SDK',
+            subtitle: 'LiveKit integration demo',
+          },
+        },
+      },
+    });
+  },
+
   applySharpness: async () => {
     videoProcessor.clear();
     videoProcessor.apply({ running: true, sharpness: 0.5 });

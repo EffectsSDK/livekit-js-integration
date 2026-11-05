@@ -1,70 +1,97 @@
 import { Room, Track, TrackProcessor, VideoProcessorOptions } from 'livekit-client';
 import { tsvb } from 'effects-sdk';
 
-import { EffectsStateManagement, EffectsStates} from './EffectsStateManagement';
+import { EffectsStateManagement, EffectsStates } from './EffectsStateManagement';
 
 export class EffectsVideoProcessor implements TrackProcessor<Track.Kind, VideoProcessorOptions> {
-    name: string = 'effects-sdk';
-    states: EffectsStateManagement = new EffectsStateManagement();
-    
+    name = 'effects-sdk';
+    states = new EffectsStateManagement();
+
     effectsSdk: tsvb;
     processedTrack?: MediaStreamTrack;
+    private destroyed = false;
 
     constructor() {
-        console.log('EffectsVideoProcessor.constructor',);
-        //put your customer_id here
-        this.effectsSdk = new tsvb('CUSTOMER_ID');
-        this.effectsSdk.config({
-            provider: "webgpu",
-            test_inference: true
+        this.effectsSdk = this.createSdk();
+    }
+
+    private createSdk() {
+        const sdk = new tsvb('CUSTOMER_ID');
+        sdk.config({
+            preset: 'balanced',
+            provider: 'auto',
         });
-        this.effectsSdk.preload();
+        sdk.onError((error) => {
+            if (error.type === 'error') {
+                console.error('[EffectsSDK]', error.code, error.message, error.data);
+            }
+        });
+        sdk.preload();
+        return sdk;
     }
 
     apply(state: Partial<EffectsStates>) {
-        this.states.apply(this.effectsSdk, state);
+        return this.states.apply(this.effectsSdk, state);
     }
 
     clear() {
-        this.states.clear(this.effectsSdk);
+        return this.states.clear(this.effectsSdk);
     }
-    
+
     async init(opts: VideoProcessorOptions) {
         if (opts.kind !== Track.Kind.Video) {
-            return Promise.reject(new Error('Supported only video tracks'));
+            throw new Error('Effects SDK supports only video tracks');
         }
 
-        const ready = new Promise((r) => this.effectsSdk.onReady = r);
+        if (this.destroyed) {
+            this.effectsSdk = this.createSdk();
+            // Components belong to their SDK instance and cannot be reused after destroy().
+            this.states = new EffectsStateManagement();
+            this.destroyed = false;
+        }
 
-        this.effectsSdk.clear();
+        if (!this.effectsSdk.isSupported()) {
+            console.warn('[EffectsSDK] Unsupported environment; using the original video track');
+            this.processedTrack = opts.track;
+            return;
+        }
+
+        const ready = new Promise<void>((resolve) => {
+            this.effectsSdk.onReady = () => {
+                this.effectsSdk.run();
+                resolve();
+            };
+        });
+
+        // Register onReady before providing input. useStream also handles camera or
+        // resolution changes and may replace the SDK's output stream.
         this.effectsSdk.useStream(new MediaStream([opts.track]));
-        this.processedTrack = this.effectsSdk.getStream()?.getVideoTracks()[0];
-        
         await ready;
-        
-        //update sdk states from state manager
-        this.states.update(this.effectsSdk);
-    };
+
+        this.processedTrack = this.effectsSdk.getStream()?.getVideoTracks()[0];
+        if (!this.processedTrack) {
+            throw new Error('Effects SDK did not create an output video track');
+        }
+
+        await this.states.update(this.effectsSdk);
+    }
 
     async restart(opts: VideoProcessorOptions) {
         await this.init(opts);
     }
 
     async destroy() {
-        this.effectsSdk.stop();
-        this.effectsSdk.clear();
         this.processedTrack = undefined;
-        return;
+        await this.effectsSdk.destroy();
+        this.destroyed = true;
     }
-    
+
     async onPublish(room: Room) {
         console.log('EffectsVideoProcessor.onPublish', room);
-        //handle it if needed
-        return;
+        this.effectsSdk.run();
     }
+
     async onUnpublish() {
-        console.log('EffectsVideoProcessor.onUnpublish');
-        //handle it if needed — you may need to stop the SDK processing.
-        return;
+        this.effectsSdk.stop();
     }
 }

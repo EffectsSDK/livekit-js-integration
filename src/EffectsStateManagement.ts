@@ -83,6 +83,12 @@ export type BackgroundConfig = {
     mode?: 'fill' | 'fit'
 }
 
+export type PortraitLightingConfig = {
+    enabled: boolean;
+    lightStrength: number;
+    backgroundDarkness: number;
+}
+
 export interface EffectsStates {
     running: boolean;
     metrics: boolean,
@@ -96,6 +102,7 @@ export interface EffectsStates {
     freeze: boolean;
     smartzoom: number;
     beautification: number;
+    portraitLighting: PortraitLightingConfig;
     sharpness: number;
     layout: LayoutConfig;
     overlay: string;
@@ -130,6 +137,11 @@ export class EffectsStateManagement {
         freeze: false,
         smartzoom: 0,
         beautification: 0,
+        portraitLighting: {
+            enabled: false,
+            lightStrength: 0.7,
+            backgroundDarkness: 0.35,
+        },
         sharpness: 0,
         layout: {
             type: LayoutMode.CENTER,
@@ -299,10 +311,23 @@ export class EffectsStateManagement {
                 }
                 case 'beautification': { 
                     if (state[feature]) {
-                        sdk.enableBeautification()
-                        sdk.setBoundaryLevel(state[feature] as number);
+                        sdk.enableBeautification();
+                        sdk.setBeautificationLevel(state[feature] as number);
                     } else {
                         sdk.disableBeautification();
+                    }
+                    break;
+                }
+                case 'portraitLighting': {
+                    const config = state[feature] as PortraitLightingConfig;
+                    if (config.enabled) {
+                        sdk.enablePortraitLighting();
+                        sdk.setPortraitLightingOptions({
+                            LightStrength: config.lightStrength,
+                            BgDarkStrength: config.backgroundDarkness,
+                        });
+                    } else {
+                        sdk.disablePortraitLighting();
                     }
                     break;
                 }
@@ -352,8 +377,6 @@ export class EffectsStateManagement {
                                 },
                               });
                             sdk.addComponent(this.overlay, 'overlay');
-                            this.overlay.onAfterShow(() => sdk.enablePipelineSkipping());
-                            this.overlay.onBeforeHide(() => sdk.disablePipelineSkipping());
                         } else {                            
                             this.overlay.setOptions({
                                 url: state[feature], 
@@ -386,7 +409,7 @@ export class EffectsStateManagement {
 
                     if(!config.show) {
                         for (const [_key, value] of this.lowerthirds) {
-                            value.hideLowerThird();
+                            value.hide();
                         }
                         break;
                     }
@@ -398,10 +421,10 @@ export class EffectsStateManagement {
                         });
                         sdk.addComponent(lt, config.type);
                         this.lowerthirds.set(config.type, lt);
-                        lt.showLowerThird();
+                        lt.show();
                     } else {
                         lt.setOptions(config.options ? config.options : this.defaultStates[feature].options);
-                        lt.showLowerThird();
+                        lt.show();
                     }
                     
                     break;
@@ -493,6 +516,6 @@ export class EffectsStateManagement {
     }
     
     clear(sdk: tsvb) {
-        this.apply(sdk, structuredClone(this.defaultStates));
+        return this.apply(sdk, structuredClone(this.defaultStates));
     }
 }
