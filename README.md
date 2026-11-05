@@ -4,9 +4,9 @@ This browser demo shows how to process a LiveKit local camera track with Effects
 
 ## Screencast
 
-<video src="./livekit-effectssdk-screencast.mp4" controls title="LiveKit and Effects SDK demo"></video>
+https://github.com/user-attachments/assets/6422a72c-e13f-45f1-a537-0332639ce0af
 
-[Download or watch the demo screencast](./livekit-effectssdk-screencast.mp4)
+[Download the screencast](./livekit-effectssdk-screencast.mp4)
 
 Current dependencies:
 
